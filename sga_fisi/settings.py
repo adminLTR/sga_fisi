@@ -42,13 +42,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'whitenoise.runserver_nostatic',
+]
+if not DEBUG:
+    INSTALLED_APPS.append('whitenoise.runserver_nostatic')
+
+INSTALLED_APPS.extend([
     'general',
     'escuela',
     'administrativo',
     'vicerrectorado',
-    'import_export',
-]
+    'import_export'
+])
 
 JAZZMIN_SETTINGS = {
     "site_title": "SGA FISI",
@@ -95,15 +99,18 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMidd1eware",
+    'django.middleware.security.SecurityMiddleware'
+]
+if not DEBUG:
+    MIDDLEWARE.append("whitenoise.middleware.WhiteNoiseMidd1eware")
+MIDDLEWARE.extend([
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+])
 
 ROOT_URLCONF = 'sga_fisi.urls'
 
