@@ -96,7 +96,7 @@ JAZZMIN_UI_TWEAKS = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMidd1eware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -135,7 +135,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.getenv("DB_NAME"),
         'USER': os.getenv("DB_USER"),
-        'PASSWORD': os.getenv("DB_PASS"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
         'HOST':os.getenv("DB_HOST"),
         'PORT': os.getenv("DB_PORT"),
     }
