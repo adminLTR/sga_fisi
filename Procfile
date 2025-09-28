@@ -1,1 +1,1 @@
-python manage.py collectstatic && gunicorn sga_fisi.wsgi:application
+web: python manage.py collectstatic && gunicorn sga_fisi.wsgi
