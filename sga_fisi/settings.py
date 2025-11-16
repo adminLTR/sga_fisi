@@ -123,11 +123,17 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
 # HSTS Configuration (HTTP Strict Transport Security)
+# Configuración más agresiva para producción
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0  # 1 año en producción
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+SECURE_SSL_REDIRECT = not DEBUG
+
+# Forzar redirección HTTPS en producción
 if not DEBUG:
-    SECURE_HSTS_SECONDS = 31536000  # 1 año
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
     
 # Session Cookie Security
 SESSION_COOKIE_SECURE = not DEBUG  # True en producción
@@ -138,7 +144,10 @@ SESSION_COOKIE_AGE = 3600  # 1 hora
 # CSRF Cookie Security
 CSRF_COOKIE_SECURE = not DEBUG  # True en producción
 CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Strict'  # Cambiar a Strict para mayor seguridad
+CSRF_USE_SESSIONS = True  # Guardar token CSRF en sesión en lugar de cookie
+CSRF_COOKIE_AGE = 3600  # 1 hora
+CSRF_FAILURE_VIEW = 'general.views.errorPage'  # Vista personalizada para fallos CSRF
 
 # Content Security Policy
 CSP_DEFAULT_SRC = ("'self'",)
@@ -161,8 +170,16 @@ PERMISSIONS_POLICY = {
 }
 
 # Additional Security Settings
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_REDIRECT_HOSTS = ALLOWED_HOSTS
+
+# Configuración adicional para prevenir information disclosure
+DEFAULT_EXCEPTION_REPORTER_FILTER = 'django.views.debug.SafeExceptionReporterFilter'
+DISALLOWED_USER_AGENTS = []  # Agregar bots maliciosos si es necesario
+
+# Configuración para logging de errores sin exponer información sensible
+if not DEBUG:
+    ADMINS = [('Admin', 'admin@example.com')]  # Cambiar por email real
+    MANAGERS = ADMINS
 
 
 ROOT_URLCONF = 'sga_fisi.urls'

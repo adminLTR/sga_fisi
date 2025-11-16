@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error del Servidor - SGA FISI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        .error-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            text-align: center;
+        }
+        .error-code {
+            font-size: 6rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 1rem;
+            line-height: 1;
+        }
+        .error-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+        .error-description {
+            font-size: 1.1rem;
+            color: #718096;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        .btn-secondary:hover {
+            background: #cbd5e0;
+            transform: translateY(-2px);
+        }
+        .error-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #e2e8f0;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">🔧</div>
+        <div class="error-code">500</div>
+        <h1 class="error-title">Error del Servidor</h1>
+        <p class="error-description">
+            Lo sentimos, ocurrió un error interno en el servidor. 
+            Nuestro equipo ha sido notificado y está trabajando para resolver el problema.
+            Por favor, intenta nuevamente en unos momentos.
+        </p>
+        <div class="error-actions">
+            <a href="/" class="btn btn-primary">Volver al Inicio</a>
+            <button onclick="history.back()" class="btn btn-secondary">Página Anterior</button>
+        </div>
+        <div class="footer">
+            <p><strong>Sistema de Gestión Académica - FISI UNMSM</strong></p>
+            <p>Si el problema persiste, contacta al administrador del sistema</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -62,10 +62,24 @@ class SecurityHeadersMiddleware:
         # Cross-Origin-Embedder-Policy
         response['Cross-Origin-Embedder-Policy'] = 'require-corp'
         
+        # CORS Headers - Restringir acceso cross-origin
+        # Solo permitir el propio dominio, no permitir * en producción
+        response['Access-Control-Allow-Origin'] = request.get_host() if request.get_host() else 'https://lauranotfound.pythonanywhere.com'
+        response['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+        response['Access-Control-Allow-Headers'] = 'Content-Type, X-CSRFToken'
+        response['Access-Control-Allow-Credentials'] = 'true'
+        response['Access-Control-Max-Age'] = '86400'
+        
+        # Strict-Transport-Security (HSTS) - Aplicar explícitamente
+        # Forzar HTTPS por 1 año incluyendo subdominios
+        if not request.is_secure() and request.get_host() != 'localhost:8000':
+            response['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload'
+        
         # Cache-Control para páginas con información sensible
-        if request.path.startswith('/admin/') or request.path.startswith('/login/'):
-            response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        if request.path.startswith('/admin/') or request.path.startswith('/login/') or request.path.startswith('/administrativo/') or request.path.startswith('/escuela/'):
+            response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0, private'
             response['Pragma'] = 'no-cache'
+            response['Expires'] = '0'
         
         # Server header (ocultar versión del servidor)
         if 'Server' in response:
