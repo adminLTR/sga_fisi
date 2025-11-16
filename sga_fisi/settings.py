@@ -114,7 +114,55 @@ MIDDLEWARE.extend([
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'sga_fisi.middleware.SecurityHeadersMiddleware',  # Middleware de seguridad personalizado
 ])
+
+# Security Headers Configuration
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+
+# HSTS Configuration (HTTP Strict Transport Security)
+if not DEBUG:
+    SECURE_HSTS_SECONDS = 31536000  # 1 año
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = True
+    
+# Session Cookie Security
+SESSION_COOKIE_SECURE = not DEBUG  # True en producción
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_AGE = 3600  # 1 hora
+
+# CSRF Cookie Security
+CSRF_COOKIE_SECURE = not DEBUG  # True en producción
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+# Content Security Policy
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", "cdn.jsdelivr.net", "cdnjs.cloudflare.com")
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", "fonts.googleapis.com", "cdn.jsdelivr.net")
+CSP_FONT_SRC = ("'self'", "fonts.gstatic.com", "cdn.jsdelivr.net")
+CSP_IMG_SRC = ("'self'", "data:", "https:")
+CSP_CONNECT_SRC = ("'self'",)
+
+# Referrer Policy
+SECURE_REFERRER_POLICY = 'same-origin'
+
+# Permissions Policy (Feature Policy)
+PERMISSIONS_POLICY = {
+    'geolocation': [],
+    'microphone': [],
+    'camera': [],
+    'payment': [],
+    'usb': [],
+}
+
+# Additional Security Settings
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+ALLOWED_REDIRECT_HOSTS = ALLOWED_HOSTS
 
 
 ROOT_URLCONF = 'sga_fisi.urls'
@@ -201,7 +249,74 @@ STATICFILES_DIRS = [
 
 if not DEBUG:
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Logging Configuration - Ocultar información sensible en producción
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'security.log'),
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'INFO' if DEBUG else 'ERROR',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django.security': {
+            'handlers': ['file', 'console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['file', 'console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+}
+
+# Configuración de administrador para notificaciones de errores
+if not DEBUG:
+    ADMINS = [
+        ('Admin SGA FISI', os.getenv('ADMIN_EMAIL', 'admin@fisi.edu.pe')),
+    ]
+    MANAGERS = ADMINS
+
+# Password Policy - Mejorar la seguridad de contraseñas
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+]
+
+# Login/Logout URLs
+LOGIN_URL = '/admin/login/'
+LOGIN_REDIRECT_URL = '/admin/'
+LOGOUT_REDIRECT_URL = '/admin/login/'
+
+# Protección contra Host Header attacks
+USE_X_FORWARDED_HOST = False
+USE_X_FORWARDED_PORT = False
+
+# Deshabilitar información de versión de Django
+SILENCED_SYSTEM_CHECKS = [
+    'security.W004',  # Silenciar advertencia de SECURE_HSTS_SECONDS en desarrollo
+]
