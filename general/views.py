@@ -9,9 +9,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Create your views here.
-def errorPage(request, exception=None):
+def errorPage(request, exception=None, reason=""):
     """
-    Maneja errores 404 y otros errores sin exponer información sensible
+    Maneja errores 404, CSRF y otros errores sin exponer información sensible
     """
     # Log del error para debugging interno (sin exponer al usuario)
     if exception:
@@ -22,7 +22,8 @@ def errorPage(request, exception=None):
     
     context = {
         'error_type': 'not_found' if status_code == 404 else 'server_error',
-        'status_code': status_code
+        'status_code': status_code,
+        'reason': reason
     }
     
     # Renderizar template personalizado según el tipo de error

@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: sga_fisi_db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-sga_fisi_db}
+      POSTGRES_USER: ${DB_USER:-sga_user}
+      POSTGRES_PASSWORD: ${DB_PASS:-sga_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-sga_user}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: sga_fisi_web
+    command: gunicorn sga_fisi.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

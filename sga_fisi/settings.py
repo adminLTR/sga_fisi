@@ -103,11 +103,8 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware'
-]
-if not DEBUG:
-    MIDDLEWARE.append("whitenoise.middleware.WhiteNoiseMiddleware")
-MIDDLEWARE.extend([
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Siempre habilitar WhiteNoise
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -115,7 +112,7 @@ MIDDLEWARE.extend([
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'sga_fisi.middleware.SecurityHeadersMiddleware',  # Middleware de seguridad personalizado
-])
+]
 
 # Security Headers Configuration
 SECURE_BROWSER_XSS_FILTER = True
@@ -264,8 +261,17 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+# Media files (uploads)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# WhiteNoise configuration
+WHITENOISE_USE_FINDERS = True  # Habilitar en desarrollo
+WHITENOISE_AUTOREFRESH = DEBUG  # Auto-refresh en desarrollo
 if not DEBUG:
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+else:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
     
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

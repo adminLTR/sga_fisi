@@ -16,14 +16,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf import settings
+from django.conf.urls.static import static
 from general import urls
 #from rest_framework import routers
 #from web import views
 
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('', admin.site.urls),
     # path('general/', include('general.urls'))
 ]
+
+# Servir archivos estáticos en desarrollo
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler500 = 'general.views.errorPage'
 handler404 = 'general.views.errorPage'
