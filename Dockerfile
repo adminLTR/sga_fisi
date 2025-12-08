@@ -15,21 +15,24 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     libjpeg-dev \
     zlib1g-dev \
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar requirements y instalar dependencias de Python
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copiar y configurar el script de entrada ANTES de copiar todo
+# Esto asegura que tenga los permisos correctos
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh && \
+    dos2unix /app/entrypoint.sh 2>/dev/null || sed -i 's/\r$//' /app/entrypoint.sh
+
 # Copiar el proyecto
 COPY . /app/
 
 # Crear directorio para logs y media
 RUN mkdir -p /app/logs /app/media/aulas
-
-# Copiar el script de entrada y darle permisos de ejecución
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
 
 # Exponer el puerto
 EXPOSE 8000
